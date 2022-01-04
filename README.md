@@ -1,0 +1,1 @@
+# berrypay-wordpress-plugin
