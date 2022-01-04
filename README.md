@@ -1,4 +1,4 @@
-# BerryPay Wordpress Plugin
+# BerryPay Payment Gateway Wordpress Plugin using Woocommerce
 
 Contributors: BerryPay
 Tags: payment gateway, Malaysia, online banking
