@@ -1,14 +1,13 @@
 # BerryPay Payment Gateway Wordpress Plugin using WooCommerce
 
-Contributors: BerryPay
-Tags: payment gateway, Malaysia, online banking
-Requires at least: 4.3
-Tested up to: 5.8.2
-Stable tag: 2.0.1
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
-	
-BerryPay payment gateway plugin for WooCommerce.
+> Contributors: BerryPay <br>
+> Tags: payment gateway, Malaysia, online banking<br>
+> Requires at least: 4.3<br>
+> Tested up to: 5.8.2<br>
+> Stable tag: 2.0.1<br>
+> License: GPLv2 or later<br>
+> License URI: http://www.gnu.org/licenses/gpl-2.0.html<br>	
+> BerryPay payment gateway plugin for WooCommerce.
 
 ## Description
 	
