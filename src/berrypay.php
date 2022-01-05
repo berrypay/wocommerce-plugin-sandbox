@@ -16,9 +16,9 @@ class berrypay extends WC_Payment_Gateway {
 		$this->environment_mode = 'live';
 
 		if ($this->environment_mode == 'sandbox') 
-			$this->icon = 'https://berrypay.biz/assets/img/logo.png';
+			$this->icon = 'https://secure.berrpaystaging.com/assets/img/logo.png';
 		else
-			$this->icon = 'https://berrypay.biz/assets/img/logo.png';
+			$this->icon = 'https://secure.berrpaystaging.com/assets/img/logo.png';
 
 		$this->has_fields = true;
 
@@ -57,7 +57,7 @@ class berrypay extends WC_Payment_Gateway {
 				'title'    => __( 'Description', 'BerryPay' ),
 				'type'     => 'textarea',
 				'desc_tip' => __( 'Payment description the customer will see during the checkout process.', 'BerryPay' ),
-				'default'  => __( 'Pay securely using your credit card or online banking through BerryPay.', 'BerryPay' ),
+				'default'  => __( 'Pay securely using your online banking through BerryPay.', 'BerryPay' ),
 				'css'      => 'max-width:350px;'
 			),
 			'merchant_id' => array(
@@ -103,7 +103,7 @@ class berrypay extends WC_Payment_Gateway {
 		}
 
 
-        $hash_string = $this->api_key."|".$amount."|".$email."|".$name."|".$phone."|".$order_id."||".$detail;
+        $hash_string = $this->api_key."|".$amount."|".$email."|".$name."|".$phone."|".$order_id."|".$detail."|".$detail;
         
         $signature = hash_hmac('sha256', $hash_string, $this->secret_key);
 
@@ -114,6 +114,7 @@ class berrypay extends WC_Payment_Gateway {
 			'txn_buyer_email'    => $email,
 			'txn_buyer_phone'    => $phone,
 			'txn_product_name' => $detail,
+			'txn_product_desc' => $detail,
 			'api_key' => $this->api_key,
 			'signature' => $signature,
 		);
@@ -129,11 +130,18 @@ class berrypay extends WC_Payment_Gateway {
 
         $merchant_id = $this->merchant_id;
 
-		$environment_mode_url = 'https://berrypay.biz/api/v2/fpx/app/payment/'.$merchant_id;
+		$environment_mode_url = 'https://secure.berrpaystaging.com/api/v2/fpx/app/payment/'.$merchant_id; // Staging
+		// $environment_mode_url = 'https://securepay.berrypay.com/api/v2/fpx/app/payment/'.$merchant_id; // Production
+
+		$order_note = wc_get_order($order_id);
+		
+		$order_note->add_order_note('Customer made a payment attempt through BerryPay.
+		<br>Order ID: ' . $order_id . '
+		<br>You can check the payment status of this order id in BerryPay account.');
 
 		return array(
 			'result'   => 'success',
-			'redirect' =>  $environment_mode_url . '?' . $berrypay_args
+			'redirect' => $environment_mode_url . "?" . $berrypay_args 
 		);
 	}
 
@@ -149,50 +157,109 @@ class berrypay extends WC_Payment_Gateway {
 
 			$order_id = $old_wc ? $order->id : $order->get_id();
 
-// 			if ( $order && $order_id != 0 ) {
-				# Check if the data sent is valid based on the hash value
-
-
-					if ( $_REQUEST['txn_status_id'] == 1 || $_REQUEST['txn_status_id'] == '1' ) {
-						if ( strtolower( $order->get_status() ) == 'pending' || strtolower( $order->get_status() ) == 'processing' ) {
-							# only update if order is pending
-							if ( strtolower( $order->get_status() ) == 'pending' ) {
-								$order->payment_complete();
-
-								$order->add_order_note( 'Payment successfully made through BerryPay. Transaction reference is ' . $_REQUEST['txn_ref_id'] );
-							}
-
-							if ( $is_callback ) {
-								// echo 'OKWHYYOUCOMEHERE';
-								wp_redirect( $order->get_checkout_order_received_url() );
-							} else {
-								# redirect to order receive page
-								wp_redirect( $order->get_checkout_order_received_url() );
-							}
-
-							exit();
-						}
-					} else {
+				if ( $_REQUEST['txn_status_id'] == 1 || $_REQUEST['txn_status_id'] == '1' ) {
+					if ( strtolower( $order->get_status() ) == 'pending' || strtolower( $order->get_status() ) == 'processing' ) {
+						# only update if order is pending
 						if ( strtolower( $order->get_status() ) == 'pending' ) {
-							if ( ! $is_callback ) {
-								$order->add_order_note( 'Payment was unsuccessful' );
-								add_filter( 'the_content', 'berrypay_payment_declined_msg' );
-							}
+
+							$order->payment_complete();
+
+							$order->add_order_note( 'Payment successfully made through BerryPay!
+							<br>Please check inside in BerryPay Dashboard https://securepay.berrypay.com/
+							<br>Ref ID = ' . $_REQUEST['txn_ref_id'] . '
+							<br>Order ID: '. $order_id .'
+							<br>Reason: '. $_REQUEST['txn_msg']);
+
+							$order->update_status('completed');
 						}
+
+						if ( $is_callback ) {
+							// echo 'OKWHYYOUCOMEHERE';
+							// echo 'OK';
+							wp_redirect( $order->get_checkout_order_received_url() );
+						} else {
+							# redirect to order receive page
+							wp_redirect( $order->get_checkout_order_received_url() );
+							wc_add_notice('Payment was not success.<br>Please contact site admin to get your payment status', 'error');
+						}
+
+						exit();
 					}
+				} elseif ($_REQUEST['status_id'] == 3 || $_REQUEST['status_id'] == '3') {
+					if (strtolower($order->get_status()) == 'cancelled' || strtolower($order->get_status()) == 'pending' || strtolower($order->get_status()) == 'processing') {
+						# only update if order is pending
+						if (strtolower($order->get_status()) == 'cancelled' || strtolower($order->get_status()) == 'pending') {
+
+							$order->payment_complete();
+
+							$order->add_order_note('Payment attempt was in progress.
+							<br>Please check in BerryPay for latest transaction update
+							<br>Ref. No: '. $_REQUEST['txn_ref_id'].'
+							<br>Order ID: '. $order_id);
+
+							$order->update_status('processing');
+
+						}
+
+						if ($is_callback) {
+							// echo 'OK';
+							wp_redirect( $order->get_checkout_order_received_url() );
+						} else {
+							wp_redirect( $order->get_checkout_order_received_url() );
+							wc_add_notice('Payment was in process');
+						}
+						exit();
+					}
+				} elseif ($_REQUEST['status_id'] == 2 || $_REQUEST['status_id'] == '2') {
+					if (strtolower($order->get_status()) == 'pending' || strtolower($order->get_status()) == 'processing') {
+						# only update if order is pending
+						if (strtolower($order->get_status()) == 'pending' || strtolower($order->get_status()) == 'processing') {
+
+							$order->payment_complete();
+
+							$order->add_order_note('Payment attempt was in progress.
+							<br>Please check in BerryPay for latest transaction update
+							<br>Ref. No: '. $_REQUEST['txn_ref_id'].'
+							<br>Order ID: '. $order_id);
+
+							$order->update_status('processing');
+
+						}
+
+						if ($is_callback) {
+							// echo 'OK';
+							wp_redirect( $order->get_checkout_order_received_url() );
+						} else {
+							wp_redirect( $order->get_checkout_order_received_url() );
+							wc_add_notice('Payment was in process');
+						}
+						exit();
+					}
+				} else {
+					if ( strtolower( $order->get_status() ) == 'pending' || strtolower( $order->get_status() ) == 'processing' ) {
+						
+						$order->payment_complete();
+
+						$order->add_order_note('Payment attempt was unsuccessful.
+							<br>Please check in BerryPay for latest transaction update
+							<br>Ref. No: '. $_REQUEST['txn_ref_id'].'
+							<br>Order ID: '. $order_id);
+
+						$order->update_status('failed');
+
+						if ( ! $is_callback ) {
+							wp_redirect( $order->get_checkout_order_received_url() );
+							wc_add_notice('Payment was not success.<br>Please contact site admin to get your payment status', 'error');
+						} else {
+							wp_redirect( $order->get_checkout_order_received_url() );
+							wc_add_notice('Payment was not success.<br>Please contact site admin to get your payment status', 'error');
+
+						}
+						exit();
+					}
+				}
 			
-// 			}
-
-// 			if ( $is_callback ) {
-// 				echo 'OKTEST\n';
-// 				echo $order.'\n';
-// 				echo $order_id.'\n';
-// 				echo $_REQUEST['txn_status_id'];
-				
-
-// 				exit();
-// 			}
-		}
+			}
 	}
 
 	# Validate fields, do nothing for the moment
