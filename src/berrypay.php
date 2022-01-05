@@ -16,9 +16,9 @@ class berrypay extends WC_Payment_Gateway {
 		$this->environment_mode = 'live';
 
 		if ($this->environment_mode == 'sandbox') 
-			$this->icon = 'https://secure.berrpaystaging.com/assets/img/logo.png';
+			$this->icon = 'https://securepay.berrypay.com/assets/img/woocommerce-berrypay.png';
 		else
-			$this->icon = 'https://secure.berrpaystaging.com/assets/img/logo.png';
+			$this->icon = 'https://securepay.berrypay.com/assets/img/woocommerce-berrypay.png';
 
 		$this->has_fields = true;
 
@@ -185,7 +185,7 @@ class berrypay extends WC_Payment_Gateway {
 
 						exit();
 					}
-				} elseif ($_REQUEST['status_id'] == 3 || $_REQUEST['status_id'] == '3') {
+				} elseif ($_REQUEST['txn_status_id'] == 3 || $_REQUEST['txn_status_id'] == '3') {
 					if (strtolower($order->get_status()) == 'cancelled' || strtolower($order->get_status()) == 'pending' || strtolower($order->get_status()) == 'processing') {
 						# only update if order is pending
 						if (strtolower($order->get_status()) == 'cancelled' || strtolower($order->get_status()) == 'pending') {
@@ -203,35 +203,36 @@ class berrypay extends WC_Payment_Gateway {
 
 						if ($is_callback) {
 							// echo 'OK';
-							wp_redirect( $order->get_checkout_order_received_url() );
+							wp_redirect(wc_get_checkout_url());
 						} else {
-							wp_redirect( $order->get_checkout_order_received_url() );
+							wp_redirect(wc_get_checkout_url());
 							wc_add_notice('Payment was in process');
 						}
 						exit();
 					}
-				} elseif ($_REQUEST['status_id'] == 2 || $_REQUEST['status_id'] == '2') {
+				} elseif ($_REQUEST['txn_status_id'] == 2 || $_REQUEST['txn_status_id'] == '2') {
 					if (strtolower($order->get_status()) == 'pending' || strtolower($order->get_status()) == 'processing') {
 						# only update if order is pending
 						if (strtolower($order->get_status()) == 'pending' || strtolower($order->get_status()) == 'processing') {
 
-							$order->payment_complete();
-
-							$order->add_order_note('Payment attempt was in progress.
+							$order->add_order_note('Payment attempt was unsuccessful.
 							<br>Please check in BerryPay for latest transaction update
 							<br>Ref. No: '. $_REQUEST['txn_ref_id'].'
 							<br>Order ID: '. $order_id);
 
-							$order->update_status('processing');
+							$order->update_status('failed');
 
 						}
 
 						if ($is_callback) {
 							// echo 'OK';
-							wp_redirect( $order->get_checkout_order_received_url() );
+							wp_redirect(wc_get_checkout_url());
+							wc_add_notice('Reason: Payment is decline, please contact site admin to get your payment status
+							<br>Please close this window or refresh checkout page before resubmitting your order.');
 						} else {
-							wp_redirect( $order->get_checkout_order_received_url() );
-							wc_add_notice('Payment was in process');
+							wp_redirect(wc_get_checkout_url());
+							wc_add_notice('Reason: Payment is decline, please contact site admin to get your payment status
+							<br>Please close this window or refresh checkout page before resubmitting your order.');
 						}
 						exit();
 					}
@@ -248,12 +249,13 @@ class berrypay extends WC_Payment_Gateway {
 						$order->update_status('failed');
 
 						if ( ! $is_callback ) {
-							wp_redirect( $order->get_checkout_order_received_url() );
-							wc_add_notice('Payment was not success.<br>Please contact site admin to get your payment status', 'error');
+							wp_redirect(wc_get_checkout_url());
+							wc_add_notice('Reason: Payment is decline, please contact site admin to get your payment status
+							<br>Please close this window or refresh checkout page before resubmitting your order.');
 						} else {
-							wp_redirect( $order->get_checkout_order_received_url() );
-							wc_add_notice('Payment was not success.<br>Please contact site admin to get your payment status', 'error');
-
+							wp_redirect(wc_get_checkout_url());
+							wc_add_notice('Reason: Payment is decline, please contact site admin to get your payment status
+							<br>Please close this window or refresh checkout page before resubmitting your order.');
 						}
 						exit();
 					}
