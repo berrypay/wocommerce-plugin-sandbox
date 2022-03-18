@@ -53,6 +53,12 @@ class berrypay extends WC_Payment_Gateway {
 				'desc_tip' => __( 'Payment title the customer will see during the checkout process.', 'BerryPay' ),
 				'default'  => __( 'BerryPay', 'BerryPay' ),
 			),
+			'store'          => array(
+				'title'    => __( 'Store Name (No space allowed)', 'BerryPay' ),
+				'type'     => 'text',
+				'desc_tip' => __( 'Example: merchant_name.', 'BerryPay' ),
+				'default'  => __( 'Merchant Name Here', 'BerryPay' ),
+			),
 			'description'    => array(
 				'title'    => __( 'Description', 'BerryPay' ),
 				'type'     => 'textarea',
@@ -72,7 +78,7 @@ class berrypay extends WC_Payment_Gateway {
 			),
 			'secret_key' => array(
 				'title'    => __( 'Secret Key', 'BerryPay' ),
-				'type'     => 'password',
+				'type'     => 'text',
 				'desc_tip' => __( 'This is the Secret Key that you can obtain from API integeration page in BerryPay Dashboard', 'BerryPay' ),
 			),
 		);
@@ -84,7 +90,7 @@ class berrypay extends WC_Payment_Gateway {
 		$customer_order = wc_get_order( $order_id );
 
 		# Prepare the data to send to senangPay
-		$detail = "Payment_for_order_" . $order_id;
+		$detail = "Payment for order: " . $order_id;
 
 		$old_wc = version_compare( WC_VERSION, '3.0', '<' );
 
@@ -101,19 +107,20 @@ class berrypay extends WC_Payment_Gateway {
 			$email    = $customer_order->get_billing_email();
 			$phone    = $customer_order->get_billing_phone();
 		}
-
-
-        $hash_string = $this->api_key."|".$amount."|".$email."|".$name."|".$phone."|".$order_id."|".$detail."|".$detail;
+		
+		$merchant = $this->store;
+	
+        $hash_string = $this->api_key."|".$amount."|".$email."|".$name."|".$phone."|".$order_id."|".$detail."|".$merchant;
         
         $signature = hash_hmac('sha256', $hash_string, $this->secret_key);
 
 		$post_args = array(
-			'txn_amount'   => $amount,
+			'txn_amount' => $amount,
 			'txn_order_id' => $order_id,
-			'txn_buyer_name'     => $name,
-			'txn_buyer_email'    => $email,
-			'txn_buyer_phone'    => $phone,
-			'txn_product_name' => $detail,
+			'txn_buyer_name' => $name,
+			'txn_buyer_email' => $email,
+			'txn_buyer_phone' => $phone,
+			'txn_product_name' => $merchant,
 			'txn_product_desc' => $detail,
 			'api_key' => $this->api_key,
 			'signature' => $signature,
@@ -127,11 +134,11 @@ class berrypay extends WC_Payment_Gateway {
 			}
 			$berrypay_args .= $key . "=" . $value;
 		}
-
+		
         $merchant_id = $this->merchant_id;
 
-		$environment_mode_url = 'https://secure.berrpaystaging.com/api/v2/fpx/app/payment/'.$merchant_id; // Staging
-		// $environment_mode_url = 'https://securepay.berrypay.com/api/v2/fpx/app/payment/'.$merchant_id; // Production
+		$environment_mode_url = 'https://secure.berrpaystaging.com/api/v2/plugin/payment/'.$merchant_id; // Staging
+		// $environment_mode_url = 'https://securepay.berrypay.com/api/v2/plugin/payment/'.$merchant_id; // Production
 
 		$order_note = wc_get_order($order_id);
 		
