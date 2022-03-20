@@ -29,7 +29,8 @@ BerryPay payment gateway plugin for WooCommerce. This plugin enable online payme
 8. By default the hash type will be md5, but you may change it later to sha256 which is strongly recommended by BerryPay.You may refer to the hash type defined in BerryPay dashboard.
 9. The environment mode by default is sandbox. Upon successful integration, we will provide the production URL and credentials.
 10. Make sure the 'Enable this payment gateway' is ticked. Click on 'Save changes' button.
-11. In BerryPay Dashboard make sure you key in your return URL and callback URL as http://your_domain/checkout/ and choose 'Read response and send email if error' for callback response, finally press Save. Please leave the 'Return URL Parameters' field empty.
+11. In BerryPay Dashboard make sure you key in your return URL and callback URL as "http://your_domain/check_berrypay_response" and choose 'Read response and send email if error' for callback response, finally press Save. Please leave the 'Return URL Parameters' field empty.
+12. Please use SBI BANK A (for success and fail testing) and SBI BANK B (for fail testing only). Bank Sandbox login is username: 1234 , password: 1234
 
 ## Frequently Asked Questions
 	
