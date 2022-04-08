@@ -26,11 +26,10 @@ BerryPay payment gateway plugin for WooCommerce. This plugin enable online payme
 5. It will display the plugin and press intall.
 6. Activate the plugin through the 'Plugins' screen in WordPress.
 7. Go to menu WooCommerce, settings, Checkout, BerryPay and fill in your "merchant_id" as "merchant_pub_key", api_key and secret_key. You can retrieve the merchant id, api_key and secret_key from BerryPay Dashboard at https://secure.berrpaystaging.com/ (login credentials will be provided upon successful merchant registration).
-8. By default the hash type will be md5, but you may change it later to sha256 which is strongly recommended by BerryPay.You may refer to the hash type defined in BerryPay dashboard.
-9. The environment mode by default is sandbox. Upon successful integration, we will provide the production URL and credentials.
-10. Make sure the 'Enable this payment gateway' is ticked. Click on 'Save changes' button.
-11. In BerryPay Dashboard make sure you key in your return URL and callback URL as "http://your_domain/check_berrypay_response" and choose 'Read response and send email if error' for callback response, finally press Save. Please leave the 'Return URL Parameters' field empty.
-12. Please use SBI BANK A (for success and fail testing) and SBI BANK B (for fail testing only). Bank Sandbox login is username: 1234 , password: 1234
+8. The environment mode by default is sandbox. Upon successful integration, we will provide the production URL and credentials.
+9. Make sure the 'Enable this payment gateway' is ticked. Click on 'Save changes' button.
+10. In BerryPay Dashboard make sure you set your return URL and callback URL as "https://your_domain/check_berrypay_response".
+11. Please use SBI BANK A (for success and fail testing) and SBI BANK B (for fail testing only). Bank Sandbox login is username: 1234 , password: 1234
 
 ## Frequently Asked Questions
 	
