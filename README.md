@@ -6,7 +6,7 @@
 > Tested up to: 5.8.2<br>
 > Stable tag: 2.0.1<br>
 > License: GPLv2 or later<br>
-> License URI: http://www.gnu.org/licenses/gpl-2.0.html<br>	
+> License URI: https://www.gnu.org/licenses/gpl-2.0.html<br>	
 > BerryPay payment gateway plugin for WooCommerce.
 
 ## Description
