@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: BerryPay
- * Plugin URI: https://berrypay.com
+ * Plugin Name: BerryPay Payment Gateway (STAGING)
+ * Plugin URI: https://github.com/technicalbpm/berrypay-wordpress-plugin
  * Description: Enable online payments using credit or debit cards and online banking.
  * Version: 2.0.1
  * Author: BerryPay
