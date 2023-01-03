@@ -169,15 +169,13 @@ class berrypay extends WC_Payment_Gateway {
 						# only update if order is pending
 						if ( strtolower( $order->get_status() ) == 'pending' ) {
 
-							$order->payment_complete();
-
 							$order->add_order_note( 'Payment successfully made through BerryPay!
 							<br>Please check inside in BerryPay Dashboard https://securepay.berrypay.com/
 							<br>Ref ID = ' . $_REQUEST['txn_ref_id'] . '
 							<br>Order ID: '. $order_id .'
 							<br>Reason: '. $_REQUEST['txn_msg']);
 
-							$order->update_status('completed');
+							$order->payment_complete();
 						}
 
 						if ( $is_callback ) {
