@@ -224,6 +224,8 @@ class berrypay extends WC_Payment_Gateway {
 							<br>Please check in BerryPay for latest transaction update
 							<br>Ref. No: '. $_REQUEST['txn_ref_id'].'
 							<br>Order ID: '. $order_id);
+							
+							$woocommerce->cart->empty_cart();
 
 							$order->update_status('failed');
 
