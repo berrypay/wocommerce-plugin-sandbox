@@ -67,9 +67,9 @@ class berrypay extends WC_Payment_Gateway {
 				'css'      => 'max-width:350px;'
 			),
 			'merchant_id' => array(
-				'title'    => __( 'Merchant ID', 'BerryPay' ),
+				'title'    => __( 'Public Key', 'BerryPay' ),
 				'type'     => 'text',
-				'desc_tip' => __( 'This is the merchant ID that you can obtain from profile page in BerryPay', 'BerryPay' ),
+				'desc_tip' => __( 'This is the pub_key that you can obtain from profile page in BerryPay', 'BerryPay' ),
 			),
 			'api_key' => array(
 				'title'    => __( 'API Key', 'BerryPay' ),
