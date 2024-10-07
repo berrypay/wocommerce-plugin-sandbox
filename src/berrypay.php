@@ -137,7 +137,7 @@ class berrypay extends WC_Payment_Gateway {
 		
         $merchant_id = $this->merchant_id;
 
-		$environment_mode_url = 'https://secure.berrpaystaging.com/api/v2/plugin/payment/'.$merchant_id; // Staging
+		$environment_mode_url = 'https://secure.berrypay.dev/api/v2/plugin/payment/'.$merchant_id; // Staging
 		// $environment_mode_url = 'https://securepay.berrypay.com/api/v2/plugin/payment/'.$merchant_id; // Production
 
 		$order_note = wc_get_order($order_id);
@@ -170,7 +170,7 @@ class berrypay extends WC_Payment_Gateway {
 						if ( strtolower( $order->get_status() ) == 'pending' ) {
 
 							$order->add_order_note( 'Payment successfully made through BerryPay!
-							<br>Please check inside in BerryPay Dashboard https://securepay.berrypay.com/
+							<br>Please check inside in BerryPay Dashboard https://secure.berrypay.dev/
 							<br>Ref ID = ' . $_REQUEST['txn_ref_id'] . '
 							<br>Order ID: '. $order_id .'
 							<br>Reason: '. $_REQUEST['txn_msg']);
